@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BoviTrack</title>
+<meta name="theme-color" content="#176b45">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BoviTrack">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png?v=5">
+<link rel="manifest" href="./manifest.webmanifest?v=5">
+<style>
+:root{--g:#176b45;--g2:#e9f5ef;--red:#b42318;--amber:#b54708;--ink:#17211b;--muted:#647067;--line:#dce5df}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Segoe UI,Arial;background:#f5f8f6;color:var(--ink)}
+header{background:var(--g);color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center}
+header b{font-size:22px;display:flex;align-items:center;gap:10px}.brand-logo{width:54px;height:54px;border-radius:50%;object-fit:cover;box-shadow:0 2px 8px #0003}
+.wrap{max-width:1100px;margin:auto;padding:22px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 4px 16px #00000008}.metric strong{display:block;font-size:30px;color:var(--g)}
+button{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer;background:var(--g);color:#fff}.secondary{background:#eef3f0;color:var(--ink)}.danger{background:#feeceb;color:var(--red)}
+input{width:100%;padding:11px;border:1px solid #ccd8d0;border-radius:9px;margin:5px 0 12px;background:#fff}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.hidden{display:none}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{padding:10px;border-bottom:1px solid #e7ede9;text-align:left;font-size:14px}
+.ok{color:var(--g);font-weight:800}.bad{color:var(--red);font-weight:800}.warn{color:var(--amber);font-weight:800}.pill{display:inline-block;padding:4px 8px;border-radius:20px;background:var(--g2);color:var(--g);font-size:12px;font-weight:700}
+nav{display:flex;gap:8px;margin-bottom:16px}.scanbox{font-size:22px;font-weight:800;text-align:center;padding:22px;background:#f0f8f4;border:2px dashed #88b9a0;border-radius:14px}
+@media(max-width:750px){.grid{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.wrap{padding:12px}table{font-size:12px;display:block;overflow:auto}header span{display:none}}
+</style>
+</head>
+<body>
+<header><b><img class="brand-logo" src="./bovitrack-logo.png?v=5" alt="BoviTrack">BoviTrack</b><span>Selecciona • Verifica • Controla</span></header>
+<main class="wrap">
+<nav><button onclick="show('home')">Inicio</button><button class="secondary" onclick="show('select')">Nueva selección</button><button class="secondary" onclick="show('receive')">Recepción</button></nav>
+
+<section id="home">
+<div class="grid"><div class="card metric">Seleccionados<strong id="mSel">0</strong></div><div class="card metric">Recibidos<strong id="mRec">0</strong></div><div class="card metric">Correctos<strong id="mOk">0</strong></div><div class="card metric">Faltantes<strong id="mMiss">0</strong></div></div>
+<div class="card" style="margin-top:14px"><h2>Operación actual</h2><div id="opInfo">Aún no hay una selección creada.</div><div class="actions" style="margin-top:12px"><button onclick="exportCSV()">Exportar Excel/CSV</button><button class="secondary" onclick="resetAll()">Nueva operación</button></div></div>
+</section>
+
+<section id="select" class="hidden">
+<div class="card"><h2>1. Nueva selección</h2><div class="row"><div><label>Proveedor / Predio</label><input id="predio" placeholder="Ej: Fundo Los Robles"></div><div><label>Nombre del lote</label><input id="lote" placeholder="Ej: Novillos septiembre"></div></div><div class="row"><div><label>Cantidad objetivo</label><input id="meta" type="number" min="0" placeholder="200"></div><div><label>Fecha</label><input id="fecha" type="date"></div></div><button onclick="saveOperation()">Guardar selección</button></div>
+<div class="card" style="margin-top:14px"><h2>2. Leer animales elegidos</h2><div class="scanbox"><input id="selChip" placeholder="Escanear o ingresar DIIO / chip" onkeydown="if(event.key==='Enter')addSelected()"><button onclick="addSelected()">Registrar animal</button></div><div id="selMsg"></div><table><thead><tr><th>#</th><th>DIIO / Chip</th><th>Fecha/Hora</th><th>Acción</th></tr></thead><tbody id="selTable"></tbody></table></div>
+</section>
+
+<section id="receive" class="hidden">
+<div class="card"><h2>Verificar recepción</h2><div class="row"><div><label>Patente camión</label><input id="patente" placeholder="ABCD-12"></div><div><label>Nombre chofer</label><input id="chofer" placeholder="Nombre del conductor"></div></div><button onclick="saveTransport()">Guardar transporte</button></div>
+<div class="card" style="margin-top:14px"><h2>Escanear animales recibidos</h2><div class="scanbox"><input id="recChip" placeholder="Escanear o ingresar DIIO / chip" onkeydown="if(event.key==='Enter')addReceived()"><button onclick="addReceived()">Verificar animal</button></div><div id="recMsg"></div><table><thead><tr><th>#</th><th>DIIO / Chip</th><th>Resultado</th><th>Hora</th><th>Acción</th></tr></thead><tbody id="recTable"></tbody></table><h3>Faltantes</h3><div id="missing"></div></div>
+</section>
+</main>
+
+<script>
+let data=JSON.parse(localStorage.getItem('bovitrack')||'{"op":{},"selected":[],"received":[],"transport":{}}');
+const $=id=>document.getElementById(id);
+function persist(){localStorage.setItem('bovitrack',JSON.stringify(data));render()}
+function show(id){['home','select','receive'].forEach(x=>$(x).classList.toggle('hidden',x!==id));render()}
+function saveOperation(){data.op={predio:$('predio').value,lote:$('lote').value,meta:$('meta').value,fecha:$('fecha').value};persist();$('selMsg').innerHTML='<p class="ok">✓ Selección guardada</p>'}
+function norm(v){return v.trim().replace(/\s+/g,'')}
+function addSelected(){let chip=norm($('selChip').value);if(!chip)return;if(data.selected.some(x=>x.chip===chip)){$('selMsg').innerHTML='<p class="warn">⚠ Animal ya seleccionado</p>';return}data.selected.push({chip,time:new Date().toLocaleString('es-CL')});$('selChip').value='';$('selMsg').innerHTML='<p class="ok">✓ Animal agregado</p>';persist();$('selChip').focus()}
+function saveTransport(){data.transport={patente:$('patente').value,chofer:$('chofer').value};persist()}
+function addReceived(){let chip=norm($('recChip').value);if(!chip)return;if(data.received.some(x=>x.chip===chip)){$('recMsg').innerHTML='<p class="warn">⚠ YA VERIFICADO: lectura repetida</p>';return}let ok=data.selected.some(x=>x.chip===chip);data.received.push({chip,time:new Date().toLocaleString('es-CL'),ok});$('recChip').value='';$('recMsg').innerHTML=ok?'<p class="ok">✓ CORRECTO — animal seleccionado previamente</p>':'<p class="bad">✕ NO CORRESPONDE — no está en tu selección</p>';persist();$('recChip').focus()}
+function del(type,i){if(confirm('¿Eliminar esta lectura?')){data[type].splice(i,1);persist()}}
+function edit(type,i){let v=prompt('Nuevo DIIO / chip:',data[type][i].chip);if(v){data[type][i].chip=norm(v);if(type==='received')data[type][i].ok=data.selected.some(x=>x.chip===data[type][i].chip);persist()}}
+function render(){let selected=new Set(data.selected.map(x=>x.chip)),received=new Set(data.received.map(x=>x.chip));let missing=data.selected.filter(x=>!received.has(x.chip)),ok=data.received.filter(x=>selected.has(x.chip));$('mSel').textContent=data.selected.length;$('mRec').textContent=data.received.length;$('mOk').textContent=ok.length;$('mMiss').textContent=missing.length;$('opInfo').innerHTML=data.op.predio?`<b>${data.op.predio}</b> · ${data.op.lote||''}<br><span class="pill">Meta: ${data.op.meta||'—'}</span> <span class="pill">Camión: ${data.transport.patente||'—'}</span> <span class="pill">Chofer: ${data.transport.chofer||'—'}</span>`:'Aún no hay una selección creada.';$('selTable').innerHTML=data.selected.map((x,i)=>`<tr><td>${i+1}</td><td>${x.chip}</td><td>${x.time}</td><td><button class="secondary" onclick="edit('selected',${i})">Editar</button> <button class="danger" onclick="del('selected',${i})">Eliminar</button></td></tr>`).join('');$('recTable').innerHTML=data.received.map((x,i)=>`<tr><td>${i+1}</td><td>${x.chip}</td><td class="${x.ok?'ok':'bad'}">${x.ok?'✓ Correcto':'✕ No seleccionado'}</td><td>${x.time}</td><td><button class="secondary" onclick="edit('received',${i})">Editar</button> <button class="danger" onclick="del('received',${i})">Eliminar</button></td></tr>`).join('');$('missing').innerHTML=missing.length?missing.map(x=>`<span class="pill" style="margin:3px">${x.chip}</span>`).join(''):'<span class="ok">Sin faltantes</span>';if(data.op){$('predio').value=data.op.predio||'';$('lote').value=data.op.lote||'';$('meta').value=data.op.meta||'';$('fecha').value=data.op.fecha||''}$('patente').value=data.transport.patente||'';$('chofer').value=data.transport.chofer||''}
+function exportCSV(){let sel=new Set(data.selected.map(x=>x.chip)),rec=new Map(data.received.map(x=>[x.chip,x]));let all=[...new Set([...sel,...rec.keys()])];let rows=[['DIIO/Chip','Seleccionado','Recibido','Resultado','Predio','Lote','Patente','Chofer']];all.forEach(ch=>rows.push([ch,sel.has(ch)?'Sí':'No',rec.has(ch)?'Sí':'No',sel.has(ch)&&rec.has(ch)?'Correcto':sel.has(ch)?'Faltante':'No seleccionado',data.op.predio||'',data.op.lote||'',data.transport.patente||'',data.transport.chofer||'']));let csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(';')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='BoviTrack_'+(data.op.lote||'reporte')+'.csv';a.click()}
+function resetAll(){if(confirm('¿Crear una operación nueva? Se borrarán los datos guardados en este dispositivo.')){data={op:{},selected:[],received:[],transport:{}};persist()}}
+if(!$('fecha').value)$('fecha').valueAsDate=new Date();render();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=5').then(r=>r.update()).catch(()=>{}));}
+</script>
+</body></html>

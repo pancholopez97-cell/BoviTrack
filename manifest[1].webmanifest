@@ -1,0 +1,15 @@
+{
+  "name":"BoviTrack",
+  "short_name":"BoviTrack",
+  "description":"Selección, recepción y verificación de ganado por DIIO/RFID.",
+  "start_url":"./index.html?v=5",
+  "display":"standalone",
+  "background_color":"#f5f8f6",
+  "theme_color":"#176b45",
+  "orientation":"portrait-primary",
+  "icons":[
+    {"src":"./icon-192.png?v=5","sizes":"192x192","type":"image/png"},
+    {"src":"./icon-512.png?v=5","sizes":"512x512","type":"image/png"},
+    {"src":"./apple-touch-icon.png?v=5","sizes":"180x180","type":"image/png"}
+  ]
+}
